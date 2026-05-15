@@ -1,0 +1,34 @@
+CAN_PACKET_SET_DUTY = 0
+CAN_PACKET_SET_CURRENT = 1
+CAN_PACKET_SET_CURRENT_BRAKE = 2
+CAN_PACKET_SET_RPM = 3
+CAN_PACKET_SET_POS = 4
+CAN_PACKET_SET_ORIGIN_HERE = 5
+CAN_PACKET_SET_POS_SPD = 6
+
+AK80_64_CAN_BITRATE = 1000000
+
+AK80_64_ERPM_MIN = -100000
+AK80_64_ERPM_MAX = 100000
+
+AK80_64_CURRENT_MIN_A = -60.0
+AK80_64_CURRENT_MAX_A = 60.0
+
+AK80_64_POLE_PAIRS = 21
+AK80_64_GEAR_RATIO = 64
+
+AK80_64_ERPM_TO_OUTPUT_RPM = 1.0 / AK80_64_POLE_PAIRS / AK80_64_GEAR_RATIO
+AK80_64_OUTPUT_RPM_TO_ERPM = AK80_64_POLE_PAIRS * AK80_64_GEAR_RATIO
+
+AK80_64_IDS = {
+    "front_left_drive": 101,
+    "front_right_drive": 102,
+    "rear_left_drive": 103,
+    "rear_right_drive": 104,
+    "front_left_lift": 105,
+    "front_right_lift": 106,
+    "rear_left_lift": 107,
+    "rear_right_lift": 108,
+}
+
+
