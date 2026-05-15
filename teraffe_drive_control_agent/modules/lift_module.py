@@ -49,8 +49,8 @@ class LiftModule:
             self.stop()
             return False
 
-        # 2. 보조 모터(다이나믹셀) 제어 (-0.05A)
-        self.assist_motor.assist(-0.05)
+        # 2. 보조 모터(다이나믹셀) 제어 (0.05A - AK80-64와 부호 일치)
+        self.assist_motor.assist(0.05)
         
         # 3. 주 구동 모터(AK80-64) 제어 (양수 방향)
         self.lift_motor.set_erpm(abs(erpm))
@@ -71,8 +71,8 @@ class LiftModule:
             self.stop()
             return False
 
-        # 2. 보조 모터(다이나믹셀) 제어 (0.1A)
-        self.assist_motor.assist(0.1)
+        # 2. 보조 모터(다이나믹셀) 제어 (-0.1A - AK80-64와 부호 일치)
+        self.assist_motor.assist(-0.1)
 
         # 3. 주 구동 모터(AK80-64) 제어 (음수 방향)
         self.lift_motor.set_erpm(-abs(erpm))
