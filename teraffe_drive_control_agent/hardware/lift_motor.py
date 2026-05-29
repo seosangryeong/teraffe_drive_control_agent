@@ -6,6 +6,7 @@ class LiftMotor:
         self.name = name
         self.id = motor_id
         self.bus = can_bus
+        self.error_count = 0  # CAN 전송 에러 카운터 추가
 
     def make_extended_id(self, packet_id):
         return self.id | (packet_id << 8)
@@ -24,10 +25,14 @@ class LiftMotor:
         ]
 
     def send_packet(self, packet_id, data):
-        self.bus.send_extended(
-            arbitration_id=self.make_extended_id(packet_id),
-            data=data,
-        )
+        try:
+            self.bus.send_extended(
+                arbitration_id=self.make_extended_id(packet_id),
+                data=data,
+            )
+        except Exception as e:
+            # CAN 에러 발생 시 카운트 증가
+            self.error_count += 1
 
     def set_erpm(self, erpm):
         if erpm > AK80_64_ERPM_MAX:

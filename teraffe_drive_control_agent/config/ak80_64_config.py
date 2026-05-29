@@ -25,10 +25,10 @@ AK80_64_IDS = {
     "front_right_drive": 102,
     "rear_left_drive": 103,
     "rear_right_drive": 104,
-    "front_left_lift": 105,
-    "front_right_lift": 106,
-    "rear_left_lift": 107,
-    "rear_right_lift": 108,
+    "front_left_lift": 1,
+    "front_right_lift": 2,
+    "rear_left_lift": 3,
+    "rear_right_lift": 4,
 }
 
 

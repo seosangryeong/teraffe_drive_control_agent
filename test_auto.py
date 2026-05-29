@@ -3,7 +3,7 @@ import time
 
 PORT = "/dev/ttyUSB0"
 BAUDRATE = 115200
-ENCODER_ADDR = 0x54
+ENCODER_ADDR = 20
 
 def test_auto_rs485():
     # Test 1: RTS=False static

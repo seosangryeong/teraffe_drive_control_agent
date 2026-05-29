@@ -3,7 +3,7 @@ import time
 
 PORT = "/dev/ttyUSB0"
 BAUDRATE = 115200
-ENCODER_ADDR = 0x54
+ENCODER_ADDR = 20
 
 def verify_checksum(raw16):
     k1 = (raw16 >> 15) & 1

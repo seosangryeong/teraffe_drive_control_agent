@@ -30,13 +30,13 @@ def verify_checksum(raw16):
     return (k1 == (parity_odd ^ 1)) and (k0 == (parity_even ^ 1))
 
 
-def read_position(ser):
+def read_position(ser, encoder_addr=ENCODER_ADDR):
     for attempt in range(1, RETRY_CNT + 1):
         ser.reset_input_buffer()
         ser.reset_output_buffer()
 
         ser.rts = RTS_TX
-        written = ser.write(bytes([ENCODER_ADDR]))
+        written = ser.write(bytes([encoder_addr]))
         ser.flush()
         ser.rts = RTS_RX
 
