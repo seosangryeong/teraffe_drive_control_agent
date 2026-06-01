@@ -10,16 +10,11 @@ class DynamixelMotor:
         dxl_id,
         port_handler,
         packet_handler,
-        pull_current_A=0.15,
-        push_current_A=-0.05,
     ):
         self.name = name
         self.id = dxl_id
         self.port = port_handler
         self.packet = packet_handler
-
-        self.pull_current_A = pull_current_A
-        self.push_current_A = push_current_A
 
     def check_result(self, comm_result, dxl_error):
         if comm_result != COMM_SUCCESS:
@@ -179,15 +174,7 @@ class DynamixelMotor:
             velocity_raw,
         )
 
-    def pull(self, direction=1):
-        return self.set_goal_current_A(
-            self.pull_current_A * direction
-        )
 
-    def push(self, direction=1):
-        return self.set_goal_current_A(
-            self.push_current_A * direction
-        )
 
     def assist(self, current_A):
         return self.set_goal_current_A(current_A)

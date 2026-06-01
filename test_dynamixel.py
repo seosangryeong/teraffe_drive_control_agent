@@ -1,7 +1,8 @@
 import time
 from dynamixel_sdk import PortHandler, PacketHandler
 from teraffe_drive_control_agent.hardware.dynamixel_motor import DynamixelMotor
-from teraffe_drive_control_agent.config.dynamixel_config import DEVICENAME, BAUDRATE, PROTOCOL_VERSION
+from teraffe_drive_control_agent.config.dynamixel_config import PROTOCOL_VERSION
+from teraffe_drive_control_agent.config.teraffe_config import DYNAMIXEL_PORT as DEVICENAME, DYNAMIXEL_BAUDRATE as BAUDRATE
 
 def main():
     print("--- 다이나믹셀 단독 테스트 (ID: 1) ---")

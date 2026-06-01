@@ -1,5 +1,9 @@
+import sys
 import time
+import tty
+import select
 import serial
+import termios
 import subprocess
 
 from dynamixel_sdk import PortHandler, PacketHandler
@@ -7,8 +11,9 @@ from teraffe_drive_control_agent.hardware.bus import CanBus
 from teraffe_drive_control_agent.hardware.dynamixel_motor import DynamixelMotor
 from teraffe_drive_control_agent.hardware.lift_motor import LiftMotor
 from teraffe_drive_control_agent.modules.lift_module import LiftModule
-from teraffe_drive_control_agent.config.dynamixel_config import DEVICENAME, BAUDRATE, PROTOCOL_VERSION
-from teraffe_drive_control_agent.config.encoder_config import AMT212_PORT, AMT212_BAUDRATE
+from teraffe_drive_control_agent.config.dynamixel_config import PROTOCOL_VERSION
+from teraffe_drive_control_agent.config.teraffe_config import DYNAMIXEL_PORT as DEVICENAME, DYNAMIXEL_BAUDRATE as BAUDRATE
+from teraffe_drive_control_agent.config.teraffe_config import AMT212_PORT, AMT212_BAUDRATE
 
 
 def setup_can_interface():
@@ -128,11 +133,6 @@ def main():
     print("'d' 키: 후진")
     print("'s' 키: 정지")
     print("'q' 키 또는 Ctrl+C: 프로그램 종료\n")
-
-    import sys
-    import tty
-    import termios
-    import select
 
     old_settings = termios.tcgetattr(sys.stdin)
 

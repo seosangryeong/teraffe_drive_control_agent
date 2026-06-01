@@ -1,8 +1,6 @@
 import serial
 import time
 
-PORT = "/dev/ttyUSB0"
-BAUDRATE = 115200
 ENCODER_ADDR = 0x54
 RETRY_CNT = 5
 
@@ -61,48 +59,3 @@ def read_position(ser, encoder_addr=ENCODER_ADDR):
         return pos, deg
 
     return None, None
-
-
-def main():
-    ser = serial.Serial(
-        port=PORT,
-        baudrate=BAUDRATE,
-        bytesize=serial.EIGHTBITS,
-        parity=serial.PARITY_NONE,
-        stopbits=serial.STOPBITS_ONE,
-        timeout=0.1,
-        write_timeout=0.1,
-        xonxoff=False,
-        rtscts=False,
-        dsrdtr=False,
-        exclusive=True,
-    )
-
-    ser.rts = RTS_RX
-    ser.dtr = False
-
-    time.sleep(0.5)
-
-    ser.reset_input_buffer()
-    ser.reset_output_buffer()
-
-
-    try:
-        while True:
-            pos, deg = read_position(ser)
-
-            if pos is not None:
-                print(f"{deg:.2f}")
-
-            time.sleep(0.05)
-
-    except KeyboardInterrupt:
-        print("\nexit")
-
-    finally:
-        ser.close()
-        print("port closed")
-
-
-if __name__ == "__main__":
-    main()

@@ -19,16 +19,3 @@ AK80_64_GEAR_RATIO = 64
 
 AK80_64_ERPM_TO_OUTPUT_RPM = 1.0 / AK80_64_POLE_PAIRS / AK80_64_GEAR_RATIO
 AK80_64_OUTPUT_RPM_TO_ERPM = AK80_64_POLE_PAIRS * AK80_64_GEAR_RATIO
-
-AK80_64_IDS = {
-    "front_left_drive": 101,
-    "front_right_drive": 102,
-    "rear_left_drive": 103,
-    "rear_right_drive": 104,
-    "front_left_lift": 1,
-    "front_right_lift": 2,
-    "rear_left_lift": 3,
-    "rear_right_lift": 4,
-}
-
-

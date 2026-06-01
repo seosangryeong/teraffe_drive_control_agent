@@ -1,10 +1,9 @@
 import time
 import serial
-from teraffe_drive_control_agent.config.encoder_config import AMT212_PORT, AMT212_BAUDRATE
+from teraffe_drive_control_agent.config.teraffe_config import AMT212_PORT, AMT212_BAUDRATE
 from teraffe_drive_control_agent.hardware.encoder import read_position
 
 def main():
-    print("--- AMT212 엔코더 단독 테스트 (ID: 20) ---")
     try:
         ser = serial.Serial(
             port=AMT212_PORT,

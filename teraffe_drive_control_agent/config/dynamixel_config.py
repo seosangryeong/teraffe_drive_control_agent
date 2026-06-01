@@ -1,13 +1,4 @@
-DEVICENAME = "/dev/ttyUSB0"
-BAUDRATE = 57600
 PROTOCOL_VERSION = 2.0
-
-DYNAMIXEL_IDS = {
-    "front_left": 1,
-    "front_right": 2,
-    "rear_left": 3,
-    "rear_right": 4,
-}
 
 VALUE_OF_ZERO_RADIAN_POSITION = 2048
 VALUE_OF_MAX_RADIAN_POSITION = 4095
