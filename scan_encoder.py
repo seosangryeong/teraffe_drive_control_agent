@@ -1,12 +1,19 @@
+import argparse
 import serial
 import time
+from serial.tools import list_ports
 from teraffe_drive_control_agent.config.encoder_config import AMT212_PORT, AMT212_BAUDRATE
 
-print(f"Scanning all IDs 0-255 on {AMT212_PORT} at {AMT212_BAUDRATE} baud...")
+parser = argparse.ArgumentParser(description="Scan AMT212 encoder IDs.")
+parser.add_argument("--port", default=AMT212_PORT, help="Serial port, e.g. /dev/ttyUSB0")
+parser.add_argument("--baudrate", type=int, default=AMT212_BAUDRATE)
+args = parser.parse_args()
+
+print(f"Scanning all IDs 0-255 on {args.port} at {args.baudrate} baud...")
 try:
     ser = serial.Serial(
-        port=AMT212_PORT,
-        baudrate=AMT212_BAUDRATE,
+        port=args.port,
+        baudrate=args.baudrate,
         bytesize=serial.EIGHTBITS,
         parity=serial.PARITY_NONE,
         stopbits=serial.STOPBITS_ONE,
@@ -16,6 +23,14 @@ try:
     ser.dtr = False
 except Exception as e:
     print(f"Port open failed: {e}")
+    ports = list(list_ports.comports())
+    if ports:
+        print("\nAvailable serial ports:")
+        for port in ports:
+            print(f"  {port.device}: {port.description}")
+        print(f"\nRetry example: python3 scan_encoder.py --port {ports[0].device}")
+    else:
+        print("\nNo serial ports found. Check the USB-RS485/USB-serial adapter connection.")
     exit(1)
 
 found = []

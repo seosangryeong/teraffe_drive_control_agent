@@ -5,7 +5,7 @@ from teraffe_drive_control_agent.config.dynamixel_config import PROTOCOL_VERSION
 from teraffe_drive_control_agent.config.teraffe_config import DYNAMIXEL_PORT as DEVICENAME, DYNAMIXEL_BAUDRATE as BAUDRATE
 
 def main():
-    print("--- 다이나믹셀 단독 테스트 (ID: 1) ---")
+    print("--- 다이나믹셀 연속 왕복 테스트 (ID: 102) ---")
     port_handler = PortHandler(DEVICENAME)
     packet_handler = PacketHandler(PROTOCOL_VERSION)
     
@@ -17,7 +17,7 @@ def main():
 
     dxl = DynamixelMotor(
         name="test_assist", 
-        dxl_id=1, 
+        dxl_id=102, 
         port_handler=port_handler, 
         packet_handler=packet_handler
     )
@@ -27,18 +27,17 @@ def main():
         dxl.set_current_control_mode()
         dxl.torque_on()
         
-        print("\n전류 0.05A(extend 방향)로 회전합니다 (3초)...")
-        dxl.assist(0.05)
-        time.sleep(3)
-        
-        print("\n전류 -0.05A(retract 방향)로 역회전합니다 (3초)...")
-        dxl.assist(-0.05)
-        time.sleep(3)
+        print("\n전류 +0.05A / -0.05A를 3초 간격으로 반복합니다.")
+        print("멈추려면 Ctrl+C를 누르세요.")
 
-        print("\n정지 및 토크 오프...")
-        dxl.stop_assist()
-        dxl.torque_off()
-        time.sleep(1)
+        while True:
+            print("전류 +0.05A(extend 방향)")
+            dxl.assist(0.05)
+            time.sleep(3)
+
+            print("전류 -0.05A(retract 방향)")
+            dxl.assist(-0.05)
+            time.sleep(3)
         
     except KeyboardInterrupt:
         print("\n사용자에 의해 중단되었습니다.")

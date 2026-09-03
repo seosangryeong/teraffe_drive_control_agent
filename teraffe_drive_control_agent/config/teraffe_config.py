@@ -2,7 +2,7 @@
 
 # --- Dynamixel Configuration ---
 DYNAMIXEL_PORT = "/dev/ttyUSB0"
-DYNAMIXEL_BAUDRATE = 57600
+DYNAMIXEL_BAUDRATE = 115200
 
 DYNAMIXEL_IDS = {
     "front_left": 1,

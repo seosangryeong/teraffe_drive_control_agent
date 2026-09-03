@@ -26,6 +26,12 @@ setup(
         'console_scripts': [
             'robot_controller = teraffe_drive_control_agent.controllers.robot_controller:main',
             'ui = teraffe_drive_control_agent.ui:main',
+            'ak80_64_status_ui = teraffe_drive_control_agent.ak80_64_status_ui:main',
+            'encoder_status_ui = teraffe_drive_control_agent.encoder_status_ui:main',
+            'dynamixel_status_ui = teraffe_drive_control_agent.dynamixel_status_ui:main',
+            'dxl_encoder_status_ui = teraffe_drive_control_agent.dxl_encoder_status_ui:main',
+            'robot_hardware_status_ui = teraffe_drive_control_agent.robot_hardware_status_ui:main',
+            'robot_hardware_web_ui = teraffe_drive_control_agent.robot_hardware_web_ui:main',
         ],
     },
 )

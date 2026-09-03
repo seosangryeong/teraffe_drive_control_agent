@@ -14,7 +14,7 @@ def setup_can_interface(channel="can0", bitrate=1000000):
 
 
 def main():
-    print("--- AK80-64 모터 연속 회전 테스트 (ID: 2) ---")
+    print("--- AK80-64 모터 연속 회전 테스트 (ID: 1) ---")
 
     try:
         setup_can_interface(channel="can0", bitrate=1000000)
@@ -32,14 +32,14 @@ def main():
         print(f"CAN 포트 열기 실패: {e}")
         return
 
-    ak80 = LiftMotor(name="test_lift", motor_id=2, can_bus=can_bus)
+    ak80 = LiftMotor(name="test_lift", motor_id=101, can_bus=can_bus)
 
     try:
         print("\nERPM 5000으로 계속 회전합니다.")
         print("멈추려면 Ctrl+C를 누르세요.")
 
         while True:
-            ak80.set_erpm(5000)
+            ak80.set_erpm(-5000)
             time.sleep(0.1)
 
     except KeyboardInterrupt:
