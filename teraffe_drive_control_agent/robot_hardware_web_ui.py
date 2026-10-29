@@ -46,6 +46,9 @@ from teraffe_drive_control_agent.config.encoder_config import (
     AMT212_BAUDRATE,
     AMT212_DEG_PER_COUNT,
     AMT212_POSITION_MASK,
+    AMT212_RESPONSE_DELAY_SEC,
+    AMT212_RETRY_COUNT,
+    AMT212_RETRY_DELAY_SEC,
 )
 from teraffe_drive_control_agent.config.teraffe_config import DYNAMIXEL_BAUDRATE, DYNAMIXEL_PORT
 from teraffe_drive_control_agent.hardware.encoder import verify_checksum
@@ -59,7 +62,8 @@ STALE_SEC = 2.0
 SERIAL_LOOP_SEC = 0.005
 DXL_POLL_SEC = 0.15
 DXL_RETRY_SEC = 2.0
-ENCODER_TIMEOUT_SEC = 0.005
+ENCODER_TIMEOUT_SEC = 0.02
+SERIAL_TURNAROUND_SEC = 0.003
 
 MODULES = {
     "FL": {"ak": 101, "dxl": 111, "enc": 0x1C},
@@ -906,6 +910,7 @@ class SerialWorker(threading.Thread):
         errors = []
         try:
             self.set_baudrate(self.dxl_baudrate)
+            self.prepare_shared_serial()
         except Exception as exc:
             self.state.set_message(f"DXL baud failed: {exc}")
             return
@@ -953,28 +958,41 @@ class SerialWorker(threading.Thread):
             self.state.set_message(f"Encoder baud failed: {exc}")
             return
         ser = self.port.ser
-        ser.timeout = ENCODER_TIMEOUT_SEC
+        previous_timeout = ser.timeout
+        try:
+            ser.timeout = ENCODER_TIMEOUT_SEC
+            for attempt in range(AMT212_RETRY_COUNT):
+                self.prepare_shared_serial()
+                ser.rts = RTS_TX
+                ser.write(bytes([encoder_id]))
+                ser.flush()
+                ser.rts = RTS_RX
+                time.sleep(AMT212_RESPONSE_DELAY_SEC)
+                raw = ser.read(8)
+                if len(raw) >= 2:
+                    raw16 = raw[-2] | (raw[-1] << 8)
+                    if verify_checksum(raw16):
+                        count = raw16 & AMT212_POSITION_MASK
+                        angle_deg = count * AMT212_DEG_PER_COUNT
+                        self.state.update_module(module, "encoder", {
+                            "id": encoder_id,
+                            "angle_deg": angle_deg,
+                            "angle_rad": math.radians(angle_deg),
+                            "count": count,
+                            "raw16": f"0x{raw16:04X}",
+                        })
+                        return
+                if attempt < AMT212_RETRY_COUNT - 1:
+                    time.sleep(AMT212_RETRY_DELAY_SEC)
+        finally:
+            ser.rts = RTS_RX
+            ser.timeout = previous_timeout
+
+    def prepare_shared_serial(self):
+        ser = self.port.ser
         ser.reset_input_buffer()
         ser.reset_output_buffer()
-        ser.rts = RTS_TX
-        ser.write(bytes([encoder_id]))
-        ser.flush()
-        ser.rts = RTS_RX
-        raw = ser.read(8)
-        if len(raw) < 2:
-            return
-        raw16 = raw[-2] | (raw[-1] << 8)
-        if not verify_checksum(raw16):
-            return
-        count = raw16 & AMT212_POSITION_MASK
-        angle_deg = count * AMT212_DEG_PER_COUNT
-        self.state.update_module(module, "encoder", {
-            "id": encoder_id,
-            "angle_deg": angle_deg,
-            "angle_rad": math.radians(angle_deg),
-            "count": count,
-            "raw16": f"0x{raw16:04X}",
-        })
+        time.sleep(SERIAL_TURNAROUND_SEC)
 
     def read_u8(self, dxl_id, address, errors):
         value, comm_result, dxl_error = self.packet.read1ByteTxRx(self.port, dxl_id, address)

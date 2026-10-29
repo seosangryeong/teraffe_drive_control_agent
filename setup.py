@@ -32,6 +32,7 @@ setup(
             'dxl_encoder_status_ui = teraffe_drive_control_agent.dxl_encoder_status_ui:main',
             'robot_hardware_status_ui = teraffe_drive_control_agent.robot_hardware_status_ui:main',
             'robot_hardware_web_ui = teraffe_drive_control_agent.robot_hardware_web_ui:main',
+            'robot_tension_web_ui = teraffe_drive_control_agent.robot_tension_web_ui:main',
         ],
     },
 )

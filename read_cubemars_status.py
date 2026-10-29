@@ -31,7 +31,7 @@ def parse_args():
         )
     )
     parser.add_argument("--channel", default="can0", help="SocketCAN channel")
-    parser.add_argument("--motor-id", type=int, default=101, help="Motor CAN ID to show")
+    parser.add_argument("--motor-id", type=int, default=104, help="Motor CAN ID to show")
     parser.add_argument("--timeout", type=float, default=10.0, help="Listen duration in seconds")
     parser.add_argument(
         "--show-all",

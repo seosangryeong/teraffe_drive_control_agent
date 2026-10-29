@@ -14,8 +14,8 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Scan or ping Dynamixel IDs.")
     parser.add_argument("--port", default=DYNAMIXEL_PORT)
     parser.add_argument("--baudrate", type=int, default=DYNAMIXEL_BAUDRATE)
-    parser.add_argument("--start-id", type=int, default=1)
-    parser.add_argument("--end-id", type=int, default=20)
+    parser.add_argument("--start-id", type=int, default=111)
+    parser.add_argument("--end-id", type=int, default=114)
     return parser.parse_args()
 
 

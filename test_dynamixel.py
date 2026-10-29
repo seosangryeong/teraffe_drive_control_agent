@@ -17,7 +17,7 @@ def main():
 
     dxl = DynamixelMotor(
         name="test_assist", 
-        dxl_id=102, 
+        dxl_id=114, 
         port_handler=port_handler, 
         packet_handler=packet_handler
     )
@@ -31,13 +31,13 @@ def main():
         print("멈추려면 Ctrl+C를 누르세요.")
 
         while True:
-            print("전류 +0.05A(extend 방향)")
+            print("전류 +0.05A(줄이는 방향)")
             dxl.assist(0.05)
-            time.sleep(3)
+            # time.sleep(3)
 
-            print("전류 -0.05A(retract 방향)")
-            dxl.assist(-0.05)
-            time.sleep(3)
+            # print("전류 -0.05A(retract 방향)")
+            # dxl.assist(-0.05)
+            # time.sleep(3)
         
     except KeyboardInterrupt:
         print("\n사용자에 의해 중단되었습니다.")

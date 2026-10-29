@@ -32,14 +32,14 @@ def main():
         print(f"CAN 포트 열기 실패: {e}")
         return
 
-    ak80 = LiftMotor(name="test_lift", motor_id=101, can_bus=can_bus)
+    ak80 = LiftMotor(name="test_lift", motor_id=104, can_bus=can_bus)
 
     try:
         print("\nERPM 5000으로 계속 회전합니다.")
         print("멈추려면 Ctrl+C를 누르세요.")
 
         while True:
-            ak80.set_erpm(-5000)
+            ak80.set_erpm(5000)
             time.sleep(0.1)
 
     except KeyboardInterrupt:
