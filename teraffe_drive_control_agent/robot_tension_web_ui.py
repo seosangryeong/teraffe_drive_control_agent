@@ -146,8 +146,10 @@ def make_handler(app):
 
         def do_POST(self):
             path = urlparse(self.path).path
-            body = self.read_body()
             try:
+                body = self.read_body()
+                if not isinstance(body, dict):
+                    raise ValueError("request body must be a JSON object")
                 if path == "/api/motion/tension":
                     module = self.motion_module(body)
                     self.enqueue_motion(module, TENSION_ERPM, TENSION_DXL_CURRENT_A)
@@ -229,8 +231,8 @@ def make_handler(app):
 def main(argv=None):
     args = parse_args(argv)
     app = App(args)
-    app.start()
     server = ThreadingHTTPServer((args.host, args.port), make_handler(app))
+    app.start()
     print(f"Open http://{args.host}:{args.port}")
     try:
         server.serve_forever()

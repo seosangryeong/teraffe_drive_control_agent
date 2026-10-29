@@ -14,7 +14,7 @@ def setup_can_interface(channel="can0", bitrate=1000000):
 
 
 def main():
-    print("--- AK80-64 모터 연속 회전 테스트 (ID: 1) ---")
+    print("--- AK80-64 모터 연속 회전 테스트 (ID: 104) ---")
 
     try:
         setup_can_interface(channel="can0", bitrate=1000000)

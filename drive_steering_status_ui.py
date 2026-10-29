@@ -198,7 +198,7 @@ def main(args=None):
     except KeyboardInterrupt:
         pass
     finally:
-        server.shutdown()
+        server.server_close()
         node.destroy_node()
         rclpy.shutdown()
         ros_thread.join(timeout=2.0)

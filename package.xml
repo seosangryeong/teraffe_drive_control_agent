@@ -3,7 +3,7 @@
 <package format="3">
   <name>teraffe_drive_control_agent</name>
   <version>0.0.0</version>
-  <description>TODO: Package description</description>
+  <description>Teraffe robot hardware monitoring and lift control for ROS 2</description>
   <maintainer email="seosang990911@gmail.com">nuc</maintainer>
   <license>TODO: License declaration</license>
 
@@ -11,6 +11,11 @@
   <depend>std_msgs</depend>
   <depend>geometry_msgs</depend>
   <depend>sensor_msgs</depend>
+
+  <exec_depend>python3-can</exec_depend>
+  <exec_depend>python3-serial</exec_depend>
+  <exec_depend>python3-pyqt5</exec_depend>
+  <exec_depend>dynamixel_sdk</exec_depend>
 
   <test_depend>ament_copyright</test_depend>
   <test_depend>ament_flake8</test_depend>

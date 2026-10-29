@@ -1,7 +1,7 @@
 import rclpy
 from rclpy.node import Node
 import serial
-import time
+import threading
 
 from dynamixel_sdk import PortHandler, PacketHandler
 
@@ -10,9 +10,16 @@ from teraffe_drive_control_agent.hardware.dynamixel_motor import DynamixelMotor
 from teraffe_drive_control_agent.hardware.lift_motor import LiftMotor
 from teraffe_drive_control_agent.modules.lift_module import LiftModule
 
-from teraffe_drive_control_agent.config.dynamixel_config import DEVICENAME, BAUDRATE, PROTOCOL_VERSION, DYNAMIXEL_IDS
-from teraffe_drive_control_agent.config.ak80_64_config import AK80_64_IDS
-from teraffe_drive_control_agent.config.encoder_config import AMT212_PORT, AMT212_BAUDRATE
+from teraffe_drive_control_agent.config.dynamixel_config import PROTOCOL_VERSION
+from teraffe_drive_control_agent.config.teraffe_config import (
+    AK80_64_IDS,
+    AMT212_BAUDRATE,
+    AMT212_IDS,
+    AMT212_PORT,
+    DYNAMIXEL_BAUDRATE as BAUDRATE,
+    DYNAMIXEL_IDS,
+    DYNAMIXEL_PORT as DEVICENAME,
+)
 
 class LiftController(Node):
     def __init__(self):
@@ -23,6 +30,7 @@ class LiftController(Node):
         self.is_can_connected = False
         self.is_dxl_connected = False
         self.is_enc_connected = False
+        self.encoder_lock = threading.RLock()
 
         # ==========================================
         # 1. 통신 버스 및 포트 초기화
@@ -93,7 +101,9 @@ class LiftController(Node):
                 assist_motor=dxl,
                 encoder_ser=self.encoder_ser,
                 min_angle_deg=10.0,  # 테스트용 최소 리밋 각도
-                max_angle_deg=150.0  # 테스트용 최대 리밋 각도
+                max_angle_deg=150.0,  # 테스트용 최대 리밋 각도
+                encoder_addr=AMT212_IDS[name],
+                encoder_lock=self.encoder_lock,
             )
             
             self.lift_modules[name] = module
@@ -156,14 +166,20 @@ class LiftController(Node):
     def stop_all(self):
         """모든 다리의 동작을 정지합니다."""
         for module in self.lift_modules.values():
-            module.stop()
+            try:
+                module.stop()
+            except Exception as exc:
+                self.get_logger().error(f"{module.name} 정지 실패: {exc}")
 
     def timer_callback(self):
         """주기적으로 모든 LiftModule의 리밋 상태를 체크합니다."""
         for name, module in self.lift_modules.items():
-            limit_hit = module.check_and_stop_if_limit()
-            if limit_hit:
-                self.get_logger().warn(f"[{name}] 하드웨어 리밋 도달! 동작 정지됨.")
+            try:
+                limit_hit = module.check_and_stop_if_limit()
+                if limit_hit:
+                    self.get_logger().warn(f"[{name}] 엔코더 응답 없음 또는 리밋 도달: 정지 요청")
+            except Exception as exc:
+                self.get_logger().error(f"[{name}] 리프트 감시 중 통신 오류: {exc}")
 
     def destroy_node(self):
         """노드 종료 시 모터 정지 및 포트 닫기"""

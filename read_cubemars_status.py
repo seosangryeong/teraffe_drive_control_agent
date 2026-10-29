@@ -98,7 +98,10 @@ def main():
     )
     print(f"Filter: motor_id={args.motor_id}" if not args.show_all else "Filter: all extended frames")
 
-    bus = can.interface.Bus(channel=args.channel, interface="socketcan")
+    try:
+        bus = can.interface.Bus(channel=args.channel, interface="socketcan")
+    except TypeError:
+        bus = can.interface.Bus(channel=args.channel, bustype="socketcan")
     try:
         while time.monotonic() < deadline:
             remaining = max(0.0, deadline - time.monotonic())

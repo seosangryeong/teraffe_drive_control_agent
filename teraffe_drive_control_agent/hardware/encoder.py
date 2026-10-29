@@ -29,33 +29,33 @@ def verify_checksum(raw16):
 
 
 def read_position(ser, encoder_addr=ENCODER_ADDR):
-    for attempt in range(1, RETRY_CNT + 1):
-        ser.reset_input_buffer()
-        ser.reset_output_buffer()
+    if ser is None or not ser.is_open:
+        return None, None
 
-        ser.rts = RTS_TX
-        written = ser.write(bytes([encoder_addr]))
-        ser.flush()
-        ser.rts = RTS_RX
+    previous_timeout = ser.timeout
+    try:
+        try:
+            for attempt in range(RETRY_CNT):
+                ser.reset_input_buffer()
+                ser.reset_output_buffer()
+                ser.rts = RTS_TX
+                ser.write(bytes([encoder_addr]))
+                ser.flush()
+                ser.rts = RTS_RX
 
-        # Read up to 8 bytes to absorb RTS toggle glitches
-        ser.timeout = 0.01
-        buf = ser.read(8)
-        ser.timeout = 0.1
-
-        if len(buf) < 2:
-            time.sleep(0.01)
-            continue
-
-        raw16 = buf[-2] | (buf[-1] << 8)
-
-        if not verify_checksum(raw16):
-            time.sleep(0.01)
-            continue
-
-        pos = raw16 & 0x3FFF
-        deg = pos * 360.0 / 16383.0
-
-        return pos, deg
-
-    return None, None
+                # Read up to 8 bytes to absorb RTS toggle glitches.
+                ser.timeout = 0.01
+                buf = ser.read(8)
+                if len(buf) >= 2:
+                    raw16 = buf[-2] | (buf[-1] << 8)
+                    if verify_checksum(raw16):
+                        pos = raw16 & 0x3FFF
+                        return pos, pos * 360.0 / 16383.0
+                time.sleep(0.01)
+            return None, None
+        finally:
+            ser.timeout = previous_timeout
+            if ser.is_open:
+                ser.rts = RTS_RX
+    except (serial.SerialException, OSError):
+        return None, None

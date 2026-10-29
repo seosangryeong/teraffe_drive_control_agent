@@ -1,4 +1,4 @@
-import time
+import threading
 from teraffe_drive_control_agent.hardware.encoder import read_position
 
 class LiftModule:
@@ -16,6 +16,7 @@ class LiftModule:
         min_angle_deg,
         max_angle_deg,
         encoder_addr=0x54,
+        encoder_lock=None,
     ):
         self.name = name
         
@@ -24,6 +25,7 @@ class LiftModule:
         self.assist_motor = assist_motor      # DynamixelMotor 인스턴스
         self.encoder_ser = encoder_ser        # serial.Serial 인스턴스 (인코더 통신용)
         self.encoder_addr = encoder_addr      # 엔코더 ID (기본값 0x54)
+        self.encoder_lock = encoder_lock if encoder_lock is not None else threading.RLock()
         
         # 동작 한계 (소프트웨어 리밋)
         self.min_angle_deg = min_angle_deg
@@ -34,7 +36,8 @@ class LiftModule:
         엔코더를 통해 현재 각도를 읽어옵니다.
         읽기 실패 시 None을 반환합니다.
         """
-        pos, deg = read_position(self.encoder_ser, self.encoder_addr)
+        with self.encoder_lock:
+            pos, deg = read_position(self.encoder_ser, self.encoder_addr)
         return deg
 
     def extend(self, erpm, assist_current=0.05):
@@ -46,7 +49,10 @@ class LiftModule:
         deg = self.get_position()
         
         # 1. 엔코더 한계값 체크 (최대 길이 도달 여부)
-        if deg is not None and deg >= self.max_angle_deg:
+        if deg is None:
+            self.stop()
+            return False
+        if deg >= self.max_angle_deg:
             print(f"\r[{self.name}] ⚠️ 최대 길이(Limit) 도달 (현재: {deg:.2f}° / 최대: {self.max_angle_deg}°). 동작을 중지합니다.", end='')
             self.stop()
             return False
@@ -68,7 +74,10 @@ class LiftModule:
         deg = self.get_position()
 
         # 1. 엔코더 한계값 체크 (최소 길이 도달 여부)
-        if deg is not None and deg <= self.min_angle_deg:
+        if deg is None:
+            self.stop()
+            return False
+        if deg <= self.min_angle_deg:
             print(f"\r[{self.name}] ⚠️ 최소 길이(Limit) 도달 (현재: {deg:.2f}° / 최소: {self.min_angle_deg}°). 동작을 중지합니다.", end='')
             self.stop()
             return False
@@ -93,8 +102,10 @@ class LiftModule:
         주기적인 루프에서 엔코더 리밋을 감시할 때 사용할 수 있는 헬퍼 함수
         """
         deg = self.get_position()
-        if deg is not None:
-            if deg <= self.min_angle_deg or deg >= self.max_angle_deg:
-                self.stop()
-                return True # 리밋에 걸려 정지됨
+        if deg is None:
+            self.stop()
+            return True
+        if deg <= self.min_angle_deg or deg >= self.max_angle_deg:
+            self.stop()
+            return True
         return False

@@ -11,11 +11,11 @@ setup(
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
     ],
-    install_requires=['setuptools'],
+    install_requires=['setuptools', 'python-can', 'pyserial', 'dynamixel-sdk', 'PyQt5'],
     zip_safe=True,
     maintainer='nuc',
     maintainer_email='seosang990911@gmail.com',
-    description='TODO: Package description',
+    description='Teraffe robot hardware monitoring and lift control for ROS 2',
     license='TODO: License declaration',
     extras_require={
         'test': [
